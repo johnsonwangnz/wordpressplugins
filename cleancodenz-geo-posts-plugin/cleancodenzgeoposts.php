@@ -3,7 +3,7 @@
  Plugin Name: CleanCode NZ Geo Posts Plugin
  Plugin URI: http://www.cleancode.co.nz/cleancodenz-geo-posts-wordpress-plugin
  Description: A tool to enter posts with geo locations and list them on google map,function finding geo coordinates of a location is built in. 
- Version: 1.1.0
+ Version: 1.2.0
  Author: CleanCode NZ
  Author URI: http://www.cleancode.co.nz/about
  License: GPL2
@@ -24,7 +24,7 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-$cleancodenz_gp_ver='1.1.0';
+$cleancodenz_gp_ver='1.2.0';
 
 require_once('geoposts-config.php') ;
 require_once('gp-meta-box.php');
@@ -450,6 +450,136 @@ function getCatIndex($cats,$catname)
   return $index;
 }
 
+
+/*
+ * get the geo posts for display on google map  div: map-canvas on the map page.
+ */
+function cleancodenz_gp_map_search_generate()
+{
+  
+
+  $cats = getAllCategories();
+
+  $postcode="";
+  $searchcat="";
+  
+  if(isset($_POST['postcode']) && trim($_POST['postcode'])!='Enter Post Code')
+  {        
+    $postcode=$_POST['postcode'];
+ 
+  }
+  
+  if(isset($_POST['category']) &&$_POST['category']!="0" )
+  {
+    
+    $searchcat=$_POST['category'];
+  
+  }
+  
+  $conditions=array();
+  
+  if($postcode!="")
+  {
+    $conditions[]= array('field' =>'gp_1_postcode','value' =>$postcode);
+  }
+ 
+  if($searchcat!="")
+  {
+   $conditions[]= array('field' =>'gp_1_category','value' =>$searchcat);
+  }
+  
+  // to get all geo posts
+  $gps = getGPOfName('Geo Posts',$conditions);
+  
+  if(isset($gps))
+  {
+    //plot map legend
+     
+    ?>
+<div>
+<form action="<?php echo $_SERVER["REQUEST_URI"]?>" method="POST">
+<div>
+<input type="text" id="addressInput" name="postcode" class="postcode" size="50" value="<?php if (isset($postcode) && $postcode!="" ){echo $postcode;} else {echo 'Enter Post Code';}?> "/>
+</div>
+
+<div>
+<select id="category" name="category">
+ <option value="0">&ndash;Search By Category&ndash;</option>
+    
+ <?php
+foreach ($cats as $cat)
+{
+?> <option value="<?php echo $cat['name'];?>" <?php if (isset($searchcat) && $searchcat==$cat['name']){echo 'selected';} ?> >
+    <?php echo $cat['name']; ?></option>
+  <?php
+}// end of ach cat
+?>
+</select>
+</div>
+<input value="Search Locations" name="SearchLocation" type="submit" class="submit">
+</form>
+
+<div id="map-canvas"></div>
+</div>
+
+<?php
+//plot markers
+echo "<script type=\"text/javascript\"> \n";
+
+// to set cat array
+foreach ($cats as $cat)
+{
+  ?>
+addcategories(
+  <?php echo gp_javascriptstr_escape($cat['name']); ?>
+,
+  <?php echo gp_javascriptstr_escape($cat['icon']);?>
+); var gpofcategory = []; allgpArray.push(gpofcategory);
+
+  <?php
+
+}
+
+foreach($gps as $gp)
+{
+  if(isset($gp['gp_1_lat']) && isset($gp['gp_1_long']))
+  {
+    //to construct the content html
+    $content ='<div>'.
+                    '<h1>'.$gp['title'] .'</h1>'.
+                    '<div><img src="'.$gp['gp_1_image'] .'"/></div>'.
+                    '<div>'.$gp['content'] .'</div>'.               
+                    '</div>' ;
+
+
+     
+    ?>
+addgpstocategories(
+    <?php echo getCatIndex($cats,$gp['gp_1_category']); ?>
+,
+    <?php echo gp_javascriptstr_escape($gp['title'])  ?>
+,
+    <?php echo gp_javascriptstr_escape($content)  ?>
+,
+    <?php echo $gp['gp_1_lat'] ?>
+,
+    <?php echo $gp['gp_1_long']?>
+,
+    <?php echo gp_javascriptstr_escape($gp['gp_1__marker_image']) ?> 
+);
+
+    <?php
+     
+  } //   if(isset($gp['gp_1_lat']) && isset($gp['gp_1_long']))
+
+} // foreach($gps as $gp)
+
+echo ' </script>';
+  }
+}
+
+
+
 /*
  * get the geo posts for display on google map  div: map-canvas on the map page.
  */
@@ -554,7 +684,14 @@ function gp_javascriptstr_escape($str)
 /*
  * check this page is the map page before doing anyting
  */
-add_action('the_content', 'load_cleancodenz_gp_map');
+if(get_option('cleancodenzgeop_searchable')=="1")
+{
+  add_action('the_content', 'load_cleancodenz_gp_map_search');
+}
+else
+{
+    add_action('the_content', 'load_cleancodenz_gp_map');
+}
 
 function load_cleancodenz_gp_map($content)
 {
@@ -569,6 +706,22 @@ function load_cleancodenz_gp_map($content)
   }
   return $content;
 }
+
+function load_cleancodenz_gp_map_search($content)
+{
+
+  $page_title = get_option('cleancodenzgeop_map_page_title');
+  if (is_page($page_title))
+  {
+    echo $content;
+    cleancodenz_gp_map_search_generate();
+    return '';
+
+  }
+  return $content;
+}
+
+
 
 
 

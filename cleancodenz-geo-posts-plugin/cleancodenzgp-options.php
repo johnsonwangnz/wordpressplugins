@@ -25,6 +25,8 @@ function cleancodenzgeop_register_settings()
   register_setting( 'cleancodenzgeop-settings-group', 'cleancodenzgeop_default_zoom','');
   register_setting( 'cleancodenzgeop-settings-group', 'cleancodenzgeop_map_page_title','');
 
+  register_setting( 'cleancodenzgeop-settings-group', 'cleancodenzgeop_searchable','');
+  
 }
 
 // add admin menu
@@ -67,6 +69,11 @@ function cleancodenzgeop_options_page() {
             value="<?php echo get_option('cleancodenzgeop_map_page_title') ; ?>" /></td>
     </tr>
     
+     <tr valign="top">
+        <th scope="row">Search Layout </th>
+        <td><input type="checkbox" name="cleancodenzgeop_searchable"
+          value="1"  <?php echo checked("1", get_option('cleancodenzgeop_searchable'), "0") ; ?> /></td>
+    </tr>
     
 
 </table>

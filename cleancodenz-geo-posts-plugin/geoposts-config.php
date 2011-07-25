@@ -49,6 +49,12 @@ function getGeoPostsTypes()
                             'id' => 'gp_1__marker_image',
                             'desc' =>'Enter an URL or upload an image for marker loverlay',
                             'type' => 'markerimage' // image upload
+                            ),
+                            array(
+                            'name' => 'PostCode',
+                            'id' => 'gp_1_postcode',
+                            'desc' =>'Enter Post Code',
+                            'type' => 'text' // text box
   )
 ),
         'type' => 'cleancodenz_gp'
@@ -63,23 +69,23 @@ function getAllCategories()
   return Array(
    /*category def*/
    array(
-        'name'=>'All Categories',
-        'description' =>'Not specific, but to display with all others for all ', 
+        'name'=>'Album and Guest Book',
+        'description' =>'', 
         'icon'=>$dir.'/cat0.png' 
    ),
    array(
-        'name'=>'Category 1',
-        'description' =>'Category 1 description', 
+        'name'=>'Bridalwear Shop',
+        'description' =>'', 
         'icon'=>$dir.'/cat1.png' 
    ),
     array(
-        'name'=>'Category 2',
+        'name'=>'Gift List',
         'description' =>'Category 2 description', 
         'icon'=>$dir.'/cat2.png' 
    ),
     array(
-        'name'=>'Category 3',
-        'description' =>'Category 3 description', 
+        'name'=>'Jewellery',
+        'description' =>'', 
         'icon'=>$dir.'/cat3.png' 
    )
    
