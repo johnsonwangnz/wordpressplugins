@@ -521,7 +521,17 @@ foreach ($cats as $cat)
 
 <div id="map-canvas"></div>
 </div>
+<div id="postlist">
+<ul>
+<?php
 
+foreach($gps as $gp)
+{
+   echo '<li>'.$gp['gp_1_location'].'&nbsp;'.'from&nbsp;category&nbsp;'.$gp['gp_1_category'].'</li>';
+}
+?>
+</ul>
+</div>
 <?php
 //plot markers
 echo "<script type=\"text/javascript\"> \n";
