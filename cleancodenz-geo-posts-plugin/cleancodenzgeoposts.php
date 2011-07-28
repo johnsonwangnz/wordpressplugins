@@ -524,11 +524,14 @@ foreach ($cats as $cat)
 <div id="postlist">
 <ul>
 <?php
+ if(count($conditions)>0)
+ {
 
-foreach($gps as $gp)
-{
-   echo '<li>'.$gp['gp_1_location'].'&nbsp;'.'from&nbsp;category&nbsp;'.$gp['gp_1_category'].'</li>';
-}
+    foreach($gps as $gp)    
+    {
+        echo '<li>'.$gp['gp_1_location'].'&nbsp;'.'from&nbsp;category&nbsp;'.$gp['gp_1_category'].'</li>';
+    }
+ }
 ?>
 </ul>
 </div>
